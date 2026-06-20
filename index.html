@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🍯 꿀단지 전세계 실시간 라이브캠</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
+  :root { --honey: #F5A623; --honey-dark: #D4881A; --bg: #0a0a0a; --card: #1a1a1a; --text: #fff; --muted: #888; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  .top-bar { background: var(--honey); padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .top-bar h1 { font-size: 18px; font-weight: 900; color: white; }
+  .top-bar a { font-size: 12px; color: white; background: rgba(255,255,255,0.25); padding: 4px 12px; border-radius: 20px; text-decoration: none; }
+  .live-badge { display: inline-block; background: red; color: white; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-left: 8px; animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .tabs { display: flex; gap: 8px; padding: 16px 20px; overflow-x: auto; background: #111; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab { padding: 8px 16px; border-radius: 20px; border: 1.5px solid #333; background: #1a1a1a; color: #aaa; font-size: 13px; cursor: pointer; white-space: nowrap; font-family: inherit; transition: all 0.2s; }
+  .tab.active { background: var(--honey); border-color: var(--honey); color: white; font-weight: 700; }
+  .city-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; padding: 20px; }
+  .cam-card { background: var(--card); border-radius: 16px; overflow: hidden; }
+  .cam-header { padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .cam-title { font-size: 15px; font-weight: 700; }
+  .cam-location { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .cam-video { position: relative; padding-bottom: 56.25%; height: 0; }
+  .cam-video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  .footer { text-align: center; padding: 30px; color: var(--muted); font-size: 12px; }
+  @media (max-width: 480px) { .city-grid { grid-template-columns: 1fr; padding: 12px; } }
+</style>
+</head>
+<body>
+<div class="top-bar">
+  <h1>🍯 꿀단지 라이브캠 <span class="live-badge">LIVE</span></h1>
+  <a href="https://blog.naver.com/honey-pot-" target="_blank">블로그 구독 →</a>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showRegion('all', this)">🌍 전체</button>
+  <button class="tab" onclick="showRegion('america', this)">🗽 미주</button>
+  <button class="tab" onclick="showRegion('europe', this)">🗼 유럽</button>
+  <button class="tab" onclick="showRegion('asia', this)">🏯 아시아</button>
+  <button class="tab" onclick="showRegion('nature', this)">🌿 자연</button>
+</div>
+
+<div class="city-grid" id="camGrid"></div>
+
+<div class="footer">
+  🍯 꿀단지가 모아드리는 전세계 실시간 라이브캠<br>
+  본 페이지는 YouTube 공개 라이브 스트리밍을 임베드합니다<br><br>
+  <a href="https://blog.naver.com/honey-pot-" target="_blank" style="color:var(--honey)">꿀단지 블로그 방문하기 →</a>
+</div>
+
+<script>
+const cams = [
+  // 미주
+  { region: 'america', title: '🗽 뉴욕 타임스퀘어', location: 'New York, USA', vid: 'dNc_-hn4hP4' },
+  { region: 'america', title: '🌁 샌프란시스코 피어39', location: 'San Francisco, USA', vid: 'Nt3aVqaGEA0' },
+  { region: 'america', title: '🎰 라스베가스 스트립', location: 'Las Vegas, USA', vid: 'svPFBkZBGMQ' },
+  { region: 'america', title: '🌊 마이애미 비치', location: 'Miami, USA', vid: 'MKxb_SKnRbk' },
+  // 유럽
+  { region: 'europe', title: '🗼 파리 에펠탑', location: 'Paris, France', vid: 'LctZptPwSRY' },
+  { region: 'europe', title: '🎡 런던 빅벤', location: 'London, UK', vid: 'Tr_eAEIkFy0' },
+  { region: 'europe', title: '🍕 이탈리아 베니스', location: 'Venice, Italy', vid: 'JcZ1UiGMiuA' },
+  { region: 'europe', title: '🏰 스페인 바르셀로나', location: 'Barcelona, Spain', vid: 'xSXyBMGUin4' },
+  // 아시아
+  { region: 'asia', title: '🏯 도쿄 시부야', location: 'Tokyo, Japan', vid: 'pDFEkTLAGmo' },
+  { region: 'asia', title: '🐉 홍콩 야경', location: 'Hong Kong', vid: 'SQvbBjJoOno' },
+  { region: 'asia', title: '🌴 방콕 카오산로드', location: 'Bangkok, Thailand', vid: 'JNfSchpe5Ls' },
+  { region: 'asia', title: '🦁 싱가포르 마리나베이', location: 'Singapore', vid: 'bxsIDnRFT-Y' },
+  // 자연
+  { region: 'nature', title: '🐻 알래스카 곰 연어사냥', location: 'Brooks Falls, Alaska', vid: 'SbFTr-JzFMk' },
+  { region: 'nature', title: '🌋 하와이 킬라우에아 화산', location: 'Hawaii, USA', vid: 'YBrNKToiDqk' },
+  { region: 'nature', title: '🐘 아프리카 사파리', location: 'South Africa', vid: 'ydYDqZQpnLs' },
+  { region: 'nature', title: '🚀 NASA 국제우주정거장', location: 'ISS Live', vid: '86YLFOog4GM' },
+];
+
+let currentRegion = 'all';
+
+function showRegion(region, el) {
+  currentRegion = region;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderCams();
+}
+
+function renderCams() {
+  const grid = document.getElementById('camGrid');
+  const filtered = currentRegion === 'all' ? cams : cams.filter(c => c.region === currentRegion);
+  grid.innerHTML = filtered.map(cam => `
+    <div class="cam-card">
+      <div class="cam-header">
+        <div>
+          <div class="cam-title">${cam.title}</div>
+          <div class="cam-location">📍 ${cam.location}</div>
+        </div>
+        <span class="live-badge">LIVE</span>
+      </div>
+      <div class="cam-video">
+        <iframe src="https://www.youtube.com/embed/${cam.vid}?autoplay=0&rel=0" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>
+      </div>
+    </div>
+  `).join('');
+}
+
+renderCams();
+</script>
+</body>
+</html>
