@@ -4,44 +4,44 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>🍯 꿀단지 전세계 실시간 라이브캠</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&display=swap');
-  :root { --honey: #F5A623; --bg: #0a0a0a; --card: #1a1a1a; --card2: #222; --text: #fff; --muted: #888; --border: #333; }
+  :root { --honey: #F5A623; --bg: #0a0a0a; --card: #1a1a1a; --text: #fff; --muted: #888; --border: #333; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
-  .top-bar { background: var(--honey); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+  .top-bar { background: var(--honey); padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; z-index: 1000; }
   .top-bar h1 { font-size: 16px; font-weight: 900; color: white; }
   .top-bar a { font-size: 12px; color: white; background: rgba(255,255,255,0.25); padding: 4px 10px; border-radius: 20px; text-decoration: none; }
   .live-badge { display: inline-block; background: red; color: white; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-left: 6px; animation: blink 1s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
-  .main { display: flex; flex: 1; overflow: hidden; }
-  .sidebar { width: 200px; background: var(--card); overflow-y: auto; flex-shrink: 0; border-right: 1px solid var(--border); }
-  .sidebar::-webkit-scrollbar { width: 4px; }
-  .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
-  .sidebar-title { padding: 10px 12px; font-size: 11px; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); }
-  .cam-item { padding: 8px 10px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.2s; }
+  .layout { display: flex; flex: 1; overflow: hidden; }
+  #map { flex: 1; }
+  .panel { width: 320px; background: var(--card); display: flex; flex-direction: column; border-left: 1px solid var(--border); flex-shrink: 0; }
+  .panel-video { position: relative; padding-bottom: 56.25%; height: 0; background: #000; }
+  .panel-video iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+  .panel-info { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .panel-title { font-size: 15px; font-weight: 900; }
+  .panel-loc { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .cam-list { overflow-y: auto; flex: 1; }
+  .cam-list::-webkit-scrollbar { width: 4px; }
+  .cam-list::-webkit-scrollbar-thumb { background: #444; }
+  .cam-list-title { padding: 10px 14px; font-size: 11px; color: var(--muted); font-weight: 700; border-bottom: 1px solid var(--border); }
+  .cam-item { display: flex; gap: 10px; padding: 10px 14px; cursor: pointer; border-bottom: 1px solid var(--border); transition: background 0.2s; align-items: center; }
   .cam-item:hover { background: #2a2a2a; }
-  .cam-item.active { background: var(--honey); }
-  .cam-item.active .cam-item-loc { color: rgba(255,255,255,0.7); }
-  .cam-thumb { width: 100%; aspect-ratio: 16/9; background: #111; border-radius: 6px; overflow: hidden; margin-bottom: 6px; }
+  .cam-item.active { background: #2a1a00; border-left: 3px solid var(--honey); }
+  .cam-thumb { width: 72px; height: 40px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #111; }
   .cam-thumb img { width: 100%; height: 100%; object-fit: cover; }
-  .cam-item-name { font-size: 12px; font-weight: 700; }
-  .cam-item-loc { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  .center { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-  .main-video { flex: 1; position: relative; background: #000; }
-  .main-video iframe { width: 100%; height: 100%; border: none; }
-  .main-info { padding: 12px 16px; background: var(--card2); border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-  .main-title { font-size: 18px; font-weight: 900; }
-  .main-loc { font-size: 13px; color: var(--muted); margin-top: 2px; }
-  .sidebar-right { width: 200px; background: var(--card); overflow-y: auto; flex-shrink: 0; border-left: 1px solid var(--border); }
-  .sidebar-right::-webkit-scrollbar { width: 4px; }
-  .sidebar-right::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
+  .cam-name { font-size: 12px; font-weight: 700; line-height: 1.3; }
+  .cam-loc-text { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .hint { position: absolute; bottom: 16px; left: 16px; background: rgba(0,0,0,0.7); color: white; padding: 8px 14px; border-radius: 20px; font-size: 12px; z-index: 500; pointer-events: none; }
   @media (max-width: 768px) {
-    .main { flex-direction: column; }
-    .sidebar, .sidebar-right { width: 100%; height: 130px; overflow-x: auto; overflow-y: hidden; display: flex; flex-direction: row; border: none; border-bottom: 1px solid var(--border); }
-    .sidebar-title { display: none; }
-    .cam-item { min-width: 130px; border-bottom: none; border-right: 1px solid var(--border); }
-    .sidebar-right { border-top: 1px solid var(--border); }
+    .layout { flex-direction: column; }
+    .panel { width: 100%; height: 280px; border-left: none; border-top: 1px solid var(--border); }
+    .cam-list { display: flex; flex-direction: row; overflow-x: auto; overflow-y: hidden; }
+    .cam-item { min-width: 140px; flex-direction: column; align-items: flex-start; border-bottom: none; border-right: 1px solid var(--border); }
+    .cam-thumb { width: 100%; height: 60px; }
   }
 </style>
 </head>
@@ -50,68 +50,77 @@
   <h1>🍯 꿀단지 라이브캠 <span class="live-badge">LIVE</span></h1>
   <a href="https://blog.naver.com/honey-pot-" target="_blank">블로그 구독 →</a>
 </div>
-<div class="main">
-  <div class="sidebar" id="sidebarLeft"></div>
-  <div class="center">
-    <div class="main-video">
-      <iframe id="mainIframe" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
-    </div>
-    <div class="main-info">
-      <div>
-        <div class="main-title" id="mainTitle"></div>
-        <div class="main-loc" id="mainLoc"></div>
-      </div>
-      <span class="live-badge" style="font-size:12px;padding:4px 10px;">● LIVE</span>
-    </div>
+<div class="layout">
+  <div style="position:relative; flex:1;">
+    <div id="map" style="width:100%;height:100%;"></div>
+    <div class="hint">📍 빨간 점을 클릭하면 실시간 영상!</div>
   </div>
-  <div class="sidebar-right" id="sidebarRight"></div>
+  <div class="panel">
+    <div class="panel-video">
+      <iframe id="panelIframe" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>
+    </div>
+    <div class="panel-info">
+      <div class="panel-title" id="panelTitle">📍 카메라를 선택해주세요</div>
+      <div class="panel-loc" id="panelLoc">지도에서 빨간 점을 클릭하세요</div>
+    </div>
+    <div class="cam-list-title">🌍 전체 채널 목록</div>
+    <div class="cam-list" id="camList"></div>
+  </div>
 </div>
 
 <script>
 const cams = [
-  // EarthCam 공식 채널 - 검증된 영상들
-  { title: '🗽 뉴욕 타임스퀘어', loc: 'New York, USA', vid: 'z-jYdOIKcTQ' },
-  { title: '🏛️ 워싱턴 기념비', loc: 'Washington D.C., USA', vid: 'oDCAAfOSqvA' },
-  { title: '🌿 아마존 열대우림', loc: 'Madre de Dios, Peru', vid: 'MSOomqI01uU' },
-  { title: '🗼 파리 에펠탑', loc: 'Paris, France', vid: 'LctZptPwSRY' },
-  { title: '🎡 런던 빅벤', loc: 'London, UK', vid: 'Tr_eAEIkFy0' },
-  { title: '🏯 도쿄 시부야', loc: 'Tokyo, Japan', vid: 'pDFEkTLAGmo' },
-  { title: '🐻 알래스카 곰 사냥', loc: 'Brooks Falls, Alaska', vid: 'SbFTr-JzFMk' },
-  { title: '🚀 NASA 우주정거장', loc: 'ISS Live', vid: '86YLFOog4GM' },
-  { title: '🌋 하와이 화산', loc: 'Hawaii, USA', vid: 'YBrNKToiDqk' },
-  { title: '🐘 아프리카 사파리', loc: 'South Africa', vid: 'ydYDqZQpnLs' },
-  { title: '🌁 샌프란시스코', loc: 'San Francisco, USA', vid: 'VGnFLdQW39A' },
-  { title: '🍕 베니스', loc: 'Venice, Italy', vid: 'JcZ1UiGMiuA' },
-  { title: '🏰 바르셀로나', loc: 'Barcelona, Spain', vid: 'xSXyBMGUin4' },
-  { title: '🐉 홍콩 야경', loc: 'Hong Kong', vid: 'SQvbBjJoOno' },
-  { title: '🌴 방콕', loc: 'Bangkok, Thailand', vid: 'JNfSchpe5Ls' },
-  { title: '🦁 싱가포르', loc: 'Singapore', vid: 'bxsIDnRFT-Y' },
+  { title: '🗽 뉴욕 타임스퀘어', loc: 'New York, USA', lat: 40.758, lng: -73.985, vid: 'z-jYdOIKcTQ' },
+  { title: '🎸 내슈빌 브로드웨이', loc: 'Nashville, USA', lat: 36.161, lng: -86.778, vid: 'h5Grd2w7HQM' },
+  { title: '🗼 파리 산책 라이브', loc: 'Paris, France', lat: 48.858, lng: 2.294, vid: '029KyWbQr9A' },
+  { title: '🎵 런던 애비로드', loc: 'London, UK', lat: 51.532, lng: -0.178, vid: 'gFRtAAmiFbE' },
+  { title: '🏯 도쿄 가부키초', loc: 'Tokyo, Japan', lat: 35.694, lng: 139.700, vid: 'M3EYAY2MftI' },
+  { title: '🏙️ 도쿄 시부야', loc: 'Tokyo, Japan', lat: 35.658, lng: 139.701, vid: 'dfVK7ld38Ys' },
+  { title: '🚀 ISS 우주정거장', loc: 'International Space Station', lat: 28.573, lng: -80.648, vid: '0FBiyFpV__g' },
+  { title: '🛸 NASA ISS 공식', loc: 'NASA, USA', lat: 29.559, lng: -95.089, vid: 'FuuC4dpSQ1M' },
 ];
 
+let currentIdx = -1;
+
+const map = L.map('map').setView([25, 10], 2);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '© OpenStreetMap © CARTO', maxZoom: 18
+}).addTo(map);
+
 function playCam(idx) {
+  currentIdx = idx;
   const cam = cams[idx];
-  document.getElementById('mainIframe').src = `https://www.youtube.com/embed/${cam.vid}?autoplay=1&rel=0`;
-  document.getElementById('mainTitle').textContent = cam.title;
-  document.getElementById('mainLoc').textContent = '📍 ' + cam.loc;
+  document.getElementById('panelIframe').src = `https://www.youtube.com/embed/${cam.vid}?autoplay=1&rel=0`;
+  document.getElementById('panelTitle').textContent = cam.title;
+  document.getElementById('panelLoc').textContent = '📍 ' + cam.loc;
   document.querySelectorAll('.cam-item').forEach((el, i) => el.classList.toggle('active', i === idx));
+  map.setView([cam.lat, cam.lng], 10);
 }
 
-function renderSidebar(el, indices) {
-  el.innerHTML = '<div class="sidebar-title">🌍 채널 목록</div>' + indices.map(i => {
-    const cam = cams[i];
-    return `<div class="cam-item" onclick="playCam(${i})">
-      <div class="cam-thumb">
-        <img src="https://img.youtube.com/vi/${cam.vid}/mqdefault.jpg" alt="${cam.title}" loading="lazy">
-      </div>
-      <div class="cam-item-name">${cam.title}</div>
-      <div class="cam-item-loc">${cam.loc}</div>
-    </div>`;
-  }).join('');
-}
+const icon = L.divIcon({
+  className: '',
+  html: `<div style="width:14px;height:14px;background:red;border:2px solid white;border-radius:50%;box-shadow:0 0 6px red;animation:none;"></div>`,
+  iconSize: [14, 14], iconAnchor: [7, 7]
+});
 
-const half = Math.ceil(cams.length / 2);
-renderSidebar(document.getElementById('sidebarLeft'), [...Array(half).keys()]);
-renderSidebar(document.getElementById('sidebarRight'), [...Array(cams.length - half).keys()].map(i => i + half));
+cams.forEach((cam, idx) => {
+  const marker = L.marker([cam.lat, cam.lng], { icon }).addTo(map);
+  marker.bindTooltip(`${cam.title}<br><small>📍 ${cam.loc}</small>`, { direction: 'top' });
+  marker.on('click', () => playCam(idx));
+});
+
+document.getElementById('camList').innerHTML = cams.map((cam, i) => `
+  <div class="cam-item" onclick="playCam(${i})">
+    <div class="cam-thumb">
+      <img src="https://img.youtube.com/vi/${cam.vid}/mqdefault.jpg" loading="lazy">
+    </div>
+    <div>
+      <div class="cam-name">${cam.title}</div>
+      <div class="cam-loc-text">${cam.loc}</div>
+    </div>
+  </div>
+`).join('');
+
 playCam(0);
 </script>
 </body>
