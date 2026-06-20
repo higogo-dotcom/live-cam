@@ -15,8 +15,6 @@
   .live-badge { display: inline-block; background: red; color: white; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-left: 6px; animation: blink 1s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
   .main { display: flex; flex: 1; overflow: hidden; }
-
-  /* 왼쪽 목록 */
   .sidebar { width: 200px; background: var(--card); overflow-y: auto; flex-shrink: 0; border-right: 1px solid var(--border); }
   .sidebar::-webkit-scrollbar { width: 4px; }
   .sidebar::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
@@ -25,32 +23,25 @@
   .cam-item:hover { background: #2a2a2a; }
   .cam-item.active { background: var(--honey); }
   .cam-item.active .cam-item-loc { color: rgba(255,255,255,0.7); }
-  .cam-thumb { width: 100%; aspect-ratio: 16/9; background: #111; border-radius: 6px; overflow: hidden; margin-bottom: 6px; position: relative; }
-  .cam-thumb iframe { width: 100%; height: 100%; border: none; pointer-events: none; }
+  .cam-thumb { width: 100%; aspect-ratio: 16/9; background: #111; border-radius: 6px; overflow: hidden; margin-bottom: 6px; }
+  .cam-thumb img { width: 100%; height: 100%; object-fit: cover; }
   .cam-item-name { font-size: 12px; font-weight: 700; }
   .cam-item-loc { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-  /* 가운데 메인 */
   .center { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
   .main-video { flex: 1; position: relative; background: #000; }
   .main-video iframe { width: 100%; height: 100%; border: none; }
   .main-info { padding: 12px 16px; background: var(--card2); border-top: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
   .main-title { font-size: 18px; font-weight: 900; }
   .main-loc { font-size: 13px; color: var(--muted); margin-top: 2px; }
-
-  /* 오른쪽 목록 */
   .sidebar-right { width: 200px; background: var(--card); overflow-y: auto; flex-shrink: 0; border-left: 1px solid var(--border); }
   .sidebar-right::-webkit-scrollbar { width: 4px; }
   .sidebar-right::-webkit-scrollbar-thumb { background: #444; border-radius: 2px; }
-
-  /* 모바일 */
   @media (max-width: 768px) {
     .main { flex-direction: column; }
-    .sidebar, .sidebar-right { width: 100%; height: 120px; overflow-x: auto; overflow-y: hidden; display: flex; flex-direction: row; border: none; border-bottom: 1px solid var(--border); }
+    .sidebar, .sidebar-right { width: 100%; height: 130px; overflow-x: auto; overflow-y: hidden; display: flex; flex-direction: row; border: none; border-bottom: 1px solid var(--border); }
     .sidebar-title { display: none; }
     .cam-item { min-width: 130px; border-bottom: none; border-right: 1px solid var(--border); }
     .sidebar-right { border-top: 1px solid var(--border); }
-    .center { flex: 1; }
   }
 </style>
 </head>
@@ -78,35 +69,31 @@
 
 <script>
 const cams = [
+  // EarthCam 공식 채널 - 검증된 영상들
   { title: '🗽 뉴욕 타임스퀘어', loc: 'New York, USA', vid: 'z-jYdOIKcTQ' },
-  { title: '🌁 샌프란시스코', loc: 'San Francisco, USA', vid: 'VGnFLdQW39A' },
-  { title: '🎰 라스베가스', loc: 'Las Vegas, USA', vid: 'svPFBkZBGMQ' },
-  { title: '🌊 마이애미 비치', loc: 'Miami, USA', vid: 'MKxb_SKnRbk' },
+  { title: '🏛️ 워싱턴 기념비', loc: 'Washington D.C., USA', vid: 'oDCAAfOSqvA' },
+  { title: '🌿 아마존 열대우림', loc: 'Madre de Dios, Peru', vid: 'MSOomqI01uU' },
   { title: '🗼 파리 에펠탑', loc: 'Paris, France', vid: 'LctZptPwSRY' },
   { title: '🎡 런던 빅벤', loc: 'London, UK', vid: 'Tr_eAEIkFy0' },
+  { title: '🏯 도쿄 시부야', loc: 'Tokyo, Japan', vid: 'pDFEkTLAGmo' },
+  { title: '🐻 알래스카 곰 사냥', loc: 'Brooks Falls, Alaska', vid: 'SbFTr-JzFMk' },
+  { title: '🚀 NASA 우주정거장', loc: 'ISS Live', vid: '86YLFOog4GM' },
+  { title: '🌋 하와이 화산', loc: 'Hawaii, USA', vid: 'YBrNKToiDqk' },
+  { title: '🐘 아프리카 사파리', loc: 'South Africa', vid: 'ydYDqZQpnLs' },
+  { title: '🌁 샌프란시스코', loc: 'San Francisco, USA', vid: 'VGnFLdQW39A' },
   { title: '🍕 베니스', loc: 'Venice, Italy', vid: 'JcZ1UiGMiuA' },
   { title: '🏰 바르셀로나', loc: 'Barcelona, Spain', vid: 'xSXyBMGUin4' },
-  { title: '🏯 도쿄 시부야', loc: 'Tokyo, Japan', vid: 'pDFEkTLAGmo' },
   { title: '🐉 홍콩 야경', loc: 'Hong Kong', vid: 'SQvbBjJoOno' },
   { title: '🌴 방콕', loc: 'Bangkok, Thailand', vid: 'JNfSchpe5Ls' },
   { title: '🦁 싱가포르', loc: 'Singapore', vid: 'bxsIDnRFT-Y' },
-  { title: '🐻 알래스카 곰', loc: 'Brooks Falls, Alaska', vid: 'SbFTr-JzFMk' },
-  { title: '🚀 NASA 우주정거장', loc: 'ISS Live', vid: '86YLFOog4GM' },
-  { title: '🐘 아프리카 사파리', loc: 'South Africa', vid: 'ydYDqZQpnLs' },
-  { title: '🌋 하와이 화산', loc: 'Hawaii, USA', vid: 'YBrNKToiDqk' },
 ];
 
-let currentIdx = 0;
-
 function playCam(idx) {
-  currentIdx = idx;
   const cam = cams[idx];
   document.getElementById('mainIframe').src = `https://www.youtube.com/embed/${cam.vid}?autoplay=1&rel=0`;
   document.getElementById('mainTitle').textContent = cam.title;
   document.getElementById('mainLoc').textContent = '📍 ' + cam.loc;
-  document.querySelectorAll('.cam-item').forEach((el, i) => {
-    el.classList.toggle('active', i === idx);
-  });
+  document.querySelectorAll('.cam-item').forEach((el, i) => el.classList.toggle('active', i === idx));
 }
 
 function renderSidebar(el, indices) {
@@ -114,7 +101,7 @@ function renderSidebar(el, indices) {
     const cam = cams[i];
     return `<div class="cam-item" onclick="playCam(${i})">
       <div class="cam-thumb">
-        <iframe src="https://www.youtube.com/embed/${cam.vid}?autoplay=0&mute=1&rel=0" loading="lazy"></iframe>
+        <img src="https://img.youtube.com/vi/${cam.vid}/mqdefault.jpg" alt="${cam.title}" loading="lazy">
       </div>
       <div class="cam-item-name">${cam.title}</div>
       <div class="cam-item-loc">${cam.loc}</div>
