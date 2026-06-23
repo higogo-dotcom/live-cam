@@ -14,10 +14,7 @@
   .top-bar a { font-size: 12px; color: white; background: rgba(255,255,255,0.25); padding: 4px 10px; border-radius: 20px; text-decoration: none; }
   .live-badge { display: inline-block; background: red; color: white; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; margin-left: 6px; animation: blink 1s infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
-
   .layout { display: flex; flex: 1; overflow: hidden; }
-
-  /* 왼쪽 40% - 리스트 */
   .list-panel { width: 40%; background: var(--card); display: flex; flex-direction: column; border-right: 1px solid var(--border); flex-shrink: 0; overflow: hidden; }
   .tabs { display: flex; overflow-x: auto; border-bottom: 1px solid var(--border); flex-shrink: 0; background: #111; }
   .tabs::-webkit-scrollbar { display: none; }
@@ -32,23 +29,34 @@
   .cam-thumb { width: 96px; height: 54px; border-radius: 6px; overflow: hidden; flex-shrink: 0; background: #111; position: relative; }
   .cam-thumb img { width: 100%; height: 100%; object-fit: cover; }
   .cam-thumb .live-dot { position: absolute; top: 4px; left: 4px; background: red; color: white; font-size: 8px; font-weight: 900; padding: 1px 4px; border-radius: 3px; }
+  .cam-thumb .yt-dot { position: absolute; top: 4px; left: 4px; background: #FF0000; color: white; font-size: 8px; font-weight: 900; padding: 1px 4px; border-radius: 3px; }
   .cam-info { flex: 1; min-width: 0; }
   .cam-name { font-size: 12px; font-weight: 700; line-height: 1.4; }
   .cam-loc-text { font-size: 11px; color: var(--muted); margin-top: 3px; }
-
-  /* 오른쪽 60% - 플레이어 */
+  .yt-badge { display: inline-block; background: #FF0000; color: white; font-size: 9px; font-weight: 900; padding: 1px 5px; border-radius: 3px; margin-top: 4px; }
   .play-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #000; }
   .play-video { flex: 1; position: relative; background: #000; }
   .play-video iframe { width: 100%; height: 100%; border: none; }
   .play-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; color: var(--muted); }
   .play-placeholder .big-icon { font-size: 48px; }
+
+  /* 유튜브 연결 안내 화면 */
+  .yt-redirect { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 20px; padding: 30px; text-align: center; background: #0f0f0f; }
+  .yt-redirect .thumb-wrap { position: relative; width: 100%; max-width: 480px; border-radius: 12px; overflow: hidden; }
+  .yt-redirect .thumb-wrap img { width: 100%; display: block; }
+  .yt-redirect .thumb-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; }
+  .yt-redirect .play-btn { width: 64px; height: 64px; background: #FF0000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 20px rgba(255,0,0,0.5); }
+  .yt-redirect h3 { font-size: 16px; font-weight: 900; color: white; }
+  .yt-redirect p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .yt-redirect .yt-open-btn { display: inline-flex; align-items: center; gap: 8px; background: #FF0000; color: white; font-size: 15px; font-weight: 900; padding: 14px 28px; border-radius: 30px; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 16px rgba(255,0,0,0.4); }
+  .yt-redirect .yt-open-btn:hover { transform: scale(1.05); box-shadow: 0 6px 24px rgba(255,0,0,0.6); }
+  .yt-redirect .note { font-size: 11px; color: #555; }
+
   .play-info { padding: 14px 18px; background: var(--card2); border-top: 1px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; }
   .play-title { font-size: 16px; font-weight: 900; }
   .play-loc { font-size: 12px; color: var(--muted); margin-top: 4px; }
   .yt-link { font-size: 11px; color: var(--honey); text-decoration: none; padding: 6px 12px; border: 1px solid var(--honey); border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
   .yt-link:hover { background: var(--honey); color: black; }
-
-  /* 모바일 */
   @media (max-width: 768px) {
     .layout { flex-direction: column; }
     .list-panel { width: 100%; height: 45%; border-right: none; border-bottom: 1px solid var(--border); }
@@ -59,7 +67,7 @@
 <body>
 <div class="top-bar">
   <h1>🍯 꿀단지 라이브캠 <span class="live-badge">LIVE</span></h1>
-  <a href="https://blog.naver.com/honey-pot-" target="_blank">블로그 구독 →</a>
+  <a href="https://honey-pot777.blogspot.com" target="_blank">블로그 구독 →</a>
 </div>
 <div class="layout">
   <div class="list-panel">
@@ -76,7 +84,7 @@
     <div class="play-info">
       <div>
         <div class="play-title" id="playTitle">전세계 실시간 라이브캠 🍯</div>
-        <div class="play-loc" id="playLoc">카메라를 선택하면 여기에 정보가 표시됩니다</div>
+        <div class="play-loc" id="playLoc">카메라를 선택하면 정보가 표시됩니다</div>
       </div>
       <a class="yt-link" id="ytLink" href="#" target="_blank">▶ YouTube</a>
     </div>
@@ -96,7 +104,7 @@ const categories = [
 ];
 
 const cams = [
-  { cat: 'special', title: '🌐 전세계 1200개 라이브캠', loc: 'Worldwide', vid: 'EFum1rGUdkk' },
+  { cat: 'special', title: '🌐 전세계 1200개 라이브캠', loc: 'Worldwide · SkylineWebcams', vid: 'EFum1rGUdkk', ytOnly: true },
   { cat: 'newyork', title: '🗽 타임스퀘어 (EarthCam)', loc: 'New York, USA', vid: 'z-jYdOIKcTQ' },
   { cat: 'newyork', title: '🗽 타임스퀘어 Duffy 4K', loc: 'New York, USA', vid: 'iiBTWU2FyFo' },
   { cat: 'newyork', title: '🗽 타임스퀘어 미드타운', loc: 'New York, USA', vid: 'lM3khCaiDos' },
@@ -139,12 +147,31 @@ let currentCat = 'all';
 function playCam(idx) {
   currentIdx = idx;
   const cam = cams[idx];
-  document.getElementById('playVideo').innerHTML = `
-    <iframe src="https://www.youtube.com/embed/${cam.vid}?autoplay=1&rel=0"
-      allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>`;
   document.getElementById('playTitle').textContent = cam.title;
   document.getElementById('playLoc').textContent = '📍 ' + cam.loc;
   document.getElementById('ytLink').href = `https://www.youtube.com/watch?v=${cam.vid}`;
+
+  if(cam.ytOnly) {
+    document.getElementById('playVideo').innerHTML = `
+      <div class="yt-redirect">
+        <div class="thumb-wrap">
+          <img src="https://img.youtube.com/vi/${cam.vid}/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/${cam.vid}/mqdefault.jpg'">
+          <div class="thumb-overlay">
+            <div class="play-btn">▶</div>
+          </div>
+        </div>
+        <h3>${cam.title}</h3>
+        <p>이 영상은 저작권 정책으로 인해<br>여기서 직접 재생할 수 없어요 😅<br>아래 버튼을 눌러 YouTube에서 시청하세요!</p>
+        <a class="yt-open-btn" href="https://www.youtube.com/watch?v=${cam.vid}" target="_blank">
+          <span>▶</span> YouTube에서 보기
+        </a>
+        <div class="note">📍 ${cam.loc}</div>
+      </div>`;
+  } else {
+    document.getElementById('playVideo').innerHTML = `
+      <iframe src="https://www.youtube.com/embed/${cam.vid}?autoplay=1&rel=0"
+        allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>`;
+  }
   renderList();
 }
 
@@ -166,11 +193,14 @@ function renderList() {
     return `<div class="cam-item ${idx === currentIdx ? 'active' : ''}" onclick="playCam(${idx})">
       <div class="cam-thumb">
         <img src="https://img.youtube.com/vi/${cam.vid}/mqdefault.jpg" loading="lazy">
-        <span class="live-dot">LIVE</span>
+        ${cam.ytOnly
+          ? `<span class="yt-dot">YT링크</span>`
+          : `<span class="live-dot">LIVE</span>`}
       </div>
       <div class="cam-info">
         <div class="cam-name">${cam.title}</div>
         <div class="cam-loc-text">📍 ${cam.loc}</div>
+        ${cam.ytOnly ? `<span class="yt-badge">▶ YouTube에서 보기</span>` : ''}
       </div>
     </div>`;
   }).join('');
